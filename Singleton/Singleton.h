@@ -19,15 +19,18 @@ class SingletonHungry
 private:
     //构造函数私有化，不允许外部方法通过new来创建实例
     SingletonHungry(){}
-    static SingletonHungry *p = new SingletonHungry();
+    static SingletonHungry *p1;     //静态成员变量声明
 
 public:
-    SingletonHungry *getInstance()
-    {
-        printf("单例模式，饿汉实现进行对象实例化\n");
-        return p;
-    }
+    static SingletonHungry *getInstance();
 };
+SingletonHungry *SingletonHungry::p1 = new SingletonHungry();        //静态成员变量的定义及初始化
+SingletonHungry *SingletonHungry::getInstance()
+{
+    printf("单例模式，饿汉实现进行对象实例化\n");
+    return p1;
+}
+
 
 //单例模式 懒汉模式，加锁机制实现线程安全
 class SingletonLazy1
@@ -35,52 +38,58 @@ class SingletonLazy1
 private:
     //构造函数私有化
     SingletonLazy1(){}
-    static SingletonLazy1 *p = nullptr;
-    static mutex lock_;
+    static SingletonLazy1 *p2;      //静态成员变量声明
+    static mutex lock_;             //静态成员变量声明
 
 public:
-    SingletonLazy1 *getInstance()
+    static SingletonLazy1 *getInstance();
+};
+SingletonLazy1 *SingletonLazy1::p2 = nullptr;           //静态成员变量的定义及初始化
+std::mutex SingletonLazy1::lock_;                       //静态成员变量的定义
+SingletonLazy1 *SingletonLazy1::getInstance()
+{
+    printf("单例模式，懒汉实现进行对象初始化\n");
     {
-        printf("单例模式，懒汉实现进行对象初始化\n");
+        //对象实例化加锁，保证线程安全
+        lock_guard<mutex> my_lock(lock_);
+        if(!p2)
         {
-            //对象实例化加锁，保证线程安全
-            lock_guard<mutex> my_lock(lock_);
-            if(!p)
-            {
-                return new SingletonLazy1();
-            }
-            else
-            {
-                return p;
-            }
+            return new SingletonLazy1();
+        }
+        else
+        {
+            return p2;
         }
     }
-};
+}
 
 //单例模式 懒汉模式，DLCP(双重检查锁模式----Double-Checked Locking Pattern)实现线程安全]
 class SingletonLazy2
 {
 private:
     //构造函数私有化
-    SingletonLazy(){}
-    static SingletonLazy *p = nullptr;
-    static mutex lock_;
+    SingletonLazy2(){}
+    static SingletonLazy2 *p3;         //静态成员变量声明
+    static mutex lock_;                //静态成员变量声明
 
 public:
-    SingletonLazy2 *getInstance()
-    {
-        printf("单例模式，懒汉实现进行对象实例化DCLP\n");
-        if(p == nullptr)
-        {
-            lock_.lock();
-            if(p == nullptr)
-            {
-                p = new SingletonLazy2();
-            }
-            lock_.unlock();
-        }
-        return p;
-    }
+    static SingletonLazy2 *getInstance();
 };
+SingletonLazy2 *SingletonLazy2::p3 = nullptr;        //静态成员变量的定义及初始化
+std::mutex SingletonLazy2::lock_;                    //静态成员变量的定义
+SingletonLazy2 *SingletonLazy2::getInstance()
+{
+    printf("单例模式，懒汉实现进行对象实例化DCLP\n");
+    if(p3 == nullptr)
+    {
+        lock_.lock();
+        if(p3 == nullptr)
+        {
+            p3 = new SingletonLazy2();
+        }
+        lock_.unlock();
+    }
+    return p3;
+}
 
 #endif
