@@ -63,7 +63,7 @@ SingletonLazy1 *SingletonLazy1::getInstance()
     }
 }
 
-//单例模式 懒汉模式，DLCP(双重检查锁模式----Double-Checked Locking Pattern)实现线程安全]
+//单例模式 懒汉模式，DLCP(双重检查锁模式----Double-Checked Locking Pattern)实现线程安全
 class SingletonLazy2
 {
 private:
